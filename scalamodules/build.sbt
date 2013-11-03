@@ -1,4 +1,4 @@
-OsgiKeys.bundleActivator := Option("com.virtuslab.has.akka.internal.Activator")
+OsgiKeys.exportPackage := Seq("com.weiglewilczek.scalamodules")
 
 OsgiKeys.importPackage := Seq("*")
 

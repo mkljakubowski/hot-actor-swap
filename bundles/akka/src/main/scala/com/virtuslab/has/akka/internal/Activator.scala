@@ -1,19 +1,16 @@
 package com.virtuslab.has.akka.internal
 
-import org.osgi.framework.{BundleContext, BundleActivator}
 import akka.actor.ActorSystem
-import com.weiglewilczek.scalamodules._
+import org.osgi.framework.BundleContext
+import akka.osgi.ActorSystemActivator
 
 /**
  * @author Mikołaj Jakubowski
  */
-class Activator extends BundleActivator {
+class Activator extends ActorSystemActivator {
 
-  def start(context: BundleContext) {
-    context createService ActorSystem("system")
-  }
+	def configure(context: BundleContext, system: ActorSystem) {
+		registerService(context, system)
+	}
 
-  def stop(context: BundleContext) {
-
-  }
 }
