@@ -69,23 +69,33 @@ object Modules extends Build {
   )
 
   lazy val akkaBundle = sbt.Project(
-		id = appName + "-akka",
-		base = file("bundles") / "akka",
-		settings = Project.defaultSettings ++ defaultSettings ++ SbtOsgi.defaultOsgiSettings
-	).aggregate(
-		scalaModules, coreBundle
-	).dependsOn(
-		scalaModules, coreBundle
-	)
+    id = appName + "-akka",
+    base = file("bundles") / "akka",
+    settings = Project.defaultSettings ++ defaultSettings ++ SbtOsgi.defaultOsgiSettings
+  ).aggregate(
+    scalaModules, coreBundle
+  ).dependsOn(
+    scalaModules, coreBundle
+  )
 
-	lazy val root = sbt.Project(
+  lazy val testBundle = sbt.Project(
+    id = appName + "-test",
+    base = file("bundles") / "test",
+    settings = Project.defaultSettings ++ defaultSettings ++ SbtOsgi.defaultOsgiSettings
+  ).aggregate(
+    scalaModules, coreBundle, akkaBundle
+  ).dependsOn(
+    scalaModules, coreBundle, akkaBundle
+  )
+
+  lazy val root = sbt.Project(
 		id = appName,
 		base = file("."),
 		settings = Project.defaultSettings ++ defaultSettings
 	).aggregate(
-		akkaBundle, scalaModules
+		akkaBundle, scalaModules, testBundle
 	).dependsOn(
-		akkaBundle, scalaModules
+		akkaBundle, scalaModules, testBundle
 	)
 
 }
