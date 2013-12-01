@@ -4,11 +4,12 @@ import akka.actor._
 import akka.routing._
 import akka.dispatch.Dispatchers
 import Messages.NewVersion
+import scala.reflect.ClassTag
 
 /**
  * @author Mikołaj Jakubowski
  */
-case class VersioningRouter[ActorType <: VersioningActor](firstEditionClass : Class[ActorType]) extends RouterConfig {
+case class VersioningRouter[ActorType <: VersioningActor](firstEditionClass : ClassTag[ActorType]) extends RouterConfig {
 
   var underlyingActors: Map[Version, ActorRef] = Map()
 
@@ -19,13 +20,13 @@ case class VersioningRouter[ActorType <: VersioningActor](firstEditionClass : Cl
   def newest = underlyingActors.maxBy(_._1)(VersionOrdering)._2
 
   def createRoute(routeeProvider: RouteeProvider): Route = {
-    underlyingActors = underlyingActors updated(Version(1), routeeProvider.context.actorOf(Props(firstEditionClass)))
+    underlyingActors = underlyingActors updated(Version(1), routeeProvider.context.actorOf(Props()(firstEditionClass)))
 
     {
       case (sender, message) => {
         message match {
-          case NewVersion(actorClass) => {
-            underlyingActors = underlyingActors updated(Version(2), routeeProvider.context.actorOf(Props(actorClass)))
+          case NewVersion(version, actorClass) => {
+            underlyingActors = underlyingActors.updated(version, routeeProvider.context.actorOf(Props()(actorClass)))
             Nil
           }
           case _ => List(Destination(sender, newest))
@@ -33,4 +34,5 @@ case class VersioningRouter[ActorType <: VersioningActor](firstEditionClass : Cl
       }
     }
   }
+
 }
