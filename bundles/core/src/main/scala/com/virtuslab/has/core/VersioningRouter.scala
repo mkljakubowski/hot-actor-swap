@@ -9,7 +9,7 @@ import scala.reflect.ClassTag
 /**
  * @author Mikołaj Jakubowski
  */
-case class VersioningRouter[ActorType <: VersioningActor](firstEditionClass : ClassTag[ActorType]) extends RouterConfig {
+case class VersioningRouter[ActorType <: VersioningActor](implicit val firstEditionClass : ClassTag[ActorType]) extends RouterConfig {
 
   var underlyingActors: Map[Version, ActorRef] = Map()
 

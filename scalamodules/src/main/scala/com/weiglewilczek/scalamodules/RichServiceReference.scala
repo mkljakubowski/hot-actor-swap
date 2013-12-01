@@ -19,10 +19,6 @@ import org.osgi.framework.ServiceReference
 
 private[scalamodules] class RichServiceReference(serviceReference: ServiceReference) {
 
-  /**
-   * Gives access to service properties as Props (alias for Scala Map[String, Any]).
-   * @return The service properties
-   */
   lazy val properties: Props = Map(propsFrom(serviceReference): _*)
 
   private def propsFrom(serviceReference: ServiceReference): Array[(String, Any)] = {

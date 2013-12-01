@@ -23,64 +23,30 @@ import org.osgi.framework.{ BundleContext, ServiceReference }
  */
 package object scalamodules {
 
-  /**
-   * Type alias for service properties.
-   */
   type Props = Map[String, Any]
 
-  /**
-   * Implicitly converts a BundleContext into a RichBundleContext.
-   * @param context The BundleContext to be converted; must not be null!
-   * @return The RichBundleContext initialized with the given BundleContext
-   */
   implicit def toRichBundleContext(context: BundleContext): RichBundleContext = {
     new RichBundleContext(context)
   }
 
-  /**
-   * Implicitly converts a ServiceReference into a RichServiceReference.
-   * @param serviceReference The ServiceReference to be converted; must not be null!
-   * @return The RichServiceReference initialized with the given ServiceReference
-   */
   implicit def toRichServiceReference(serviceReference: ServiceReference): RichServiceReference = {
     new RichServiceReference(serviceReference)
   }
 
-  /**
-   * Implicitly converts a Pair into a Map in order to easily define single entry service properties.
-   * @param pair The pair to be converted
-   * @return A Map initialized with the given pair or null, if the given pair is null
-   */
   implicit def pairToMap[A, B](pair: (A, B)): Map[A, B] =
     if (pair == null) null else Map(pair)
 
-  /**
-   * Implicitly converts a String attribute into a SimpleOpBuilder FilterComponent.
-   * @param attr The attribute to be converted; must not be null!
-   * @return A SimpleOpBuilder initialized with the given String attribute
-   */
   implicit def toSimpleOpBuilder(attr: String): SimpleOpBuilder = {
     new SimpleOpBuilder(attr)
   }
 
-  /**
-   * Implicitly converts a String attribute into a PresentBuilder FilterComponent.
-   * @param attr The attribute to be converted; must not be null!
-   * @return A PresentBuilder initialized with the given String attribute
-   */
   implicit def toPresentBuilder(attr: String): PresentBuilder = {
     new PresentBuilder(attr)
   }
 
-  /**
-   * Returns the given or inferred type wrapped into a Some.
-   */
   def interface[I](implicit manifest: Manifest[I]): Option[Class[I]] =
     Some(manifest.runtimeClass.asInstanceOf[Class[I]])
 
-  /**
-   * Returns the given or inferred type.
-   */
   def withInterface[I](implicit manifest: Manifest[I]): Class[I] =
     manifest.runtimeClass.asInstanceOf[Class[I]]
 
@@ -103,45 +69,5 @@ package object scalamodules {
     }
   }
 
-  private[scalamodules] def invokeService[I, T](
-      serviceReference: ServiceReference,
-      f: I => T,
-      context: BundleContext): Option[T] = {
-
-    try {
-      context getService serviceReference match {
-        case null => {
-          None
-        }
-        case service => {
-          val result = Some(f(service.asInstanceOf[I]))
-          result
-        }
-      }
-    }
-  }
-
-  private[scalamodules] def invokeServiceUnget[I, T](
-       serviceReference: ServiceReference,
-       f: I => T,
-       context: BundleContext): Option[T] = {
-
-    try {
-      context getService serviceReference match {
-        case null => {
-          None
-        }
-        case service => {
-          val result = Some(f(service.asInstanceOf[I]))
-          result
-        }
-      }
-    } finally context ungetService serviceReference
-  }
-
-  private[scalamodules] def serviceUnget[I, T]( serviceReference: ServiceReference,
-                                                      context: BundleContext) = {
-    context ungetService serviceReference
-  }
 
 }

@@ -29,7 +29,7 @@ class Activator extends BundleActivator {
       system =>
         import system.dispatcher
 
-        val rt = system.actorOf(Props[PoopV1].withRouter(VersioningRouter(classTag[PoopV1])))
+        val rt = system.actorOf(Props().withRouter(VersioningRouter[PoopV1]))
         system.scheduler.schedule(0 milliseconds, 25 milliseconds, rt, "1")
         system.scheduler.schedule(0 milliseconds, 25 milliseconds, rt, "2")
         system.scheduler.schedule(0 milliseconds, 25 milliseconds, rt, "3")

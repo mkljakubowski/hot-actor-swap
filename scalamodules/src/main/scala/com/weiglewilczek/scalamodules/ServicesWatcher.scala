@@ -19,34 +19,14 @@ import org.osgi.framework.{ BundleContext, ServiceReference }
 import org.osgi.framework.Constants._
 import org.osgi.util.tracker.ServiceTracker
 
-/**
- * Base class for service events.
- * @param service The service for this event; must not be null!
- * @param properties The service properties for this event; must not be null!
- */
 sealed abstract class ServiceEvent[I](service: I, properties: Props)
 
-/**
- * Service event for a service being added to the watched (tracked) services.
- * @param service The service for this event
- * @param properties The service properties for this event; must not be null!
- */
 case class AddingService[I](service: I, properties: Props)
   extends ServiceEvent[I](service, properties)
 
-/**
- * Service event for a watched (tracked) service having been modified.
- * @param service The service for this event
- * @param properties The service properties for this event; must not be null!
- */
 case class ServiceModified[I](service: I, properties: Props)
   extends ServiceEvent[I](service, properties)
 
-/**
- * Service event for a watched (tracked) service having been removed from the watched ones.
- * @param service The service for this event
- * @param properties The service properties for this event; must not be null!
- */
 case class ServiceRemoved[I](service: I, properties: Props)
   extends ServiceEvent[I](service, properties)
 
@@ -55,19 +35,10 @@ private[scalamodules] class ServicesWatcher[I <: AnyRef](
     context: BundleContext,
     filter: Option[Filter] = None) {
 
-  /**
-   * Additionally use the given Filter for finding services.
-   * @param filter The Filter to be added to this ServiceWatcher; must not be null!
-   * @return A ServiceWatcher for a service interface and the given Filter
-   */
   def withFilter(filter: Filter) = {
     new ServicesWatcher(interface, context, Some(filter))
   }
 
-  /**
-   * Handles ServiceEvents by applying the given handler function.
-   * @param handler The handler to be used for ServiceEvents; must not be null!
-   */
   def andHandle(handler: PartialFunction[ServiceEvent[I], Unit]) {
 
     val fullFilter = filter match {

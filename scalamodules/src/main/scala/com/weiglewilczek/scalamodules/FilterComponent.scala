@@ -21,23 +21,18 @@ private[scalamodules] object FilterComponent {
 private[scalamodules] sealed abstract class FilterComponent
 
 private[scalamodules] case class And(filters: List[Filter]) extends FilterComponent {
-
   override def toString = "&" + filters.mkString
 }
 
 private[scalamodules] case class Or(filters: List[Filter]) extends FilterComponent {
-
   override def toString = "|" + filters.mkString
 }
 
 private[scalamodules] case class Not(filter: Filter) extends FilterComponent {
-
   override def toString = "!" + filter
 }
 
-private[scalamodules] case class SimpleOp(attr: String, filterType: FilterType, value: Any)
-  extends FilterComponent {
-
+private[scalamodules] case class SimpleOp(attr: String, filterType: FilterType, value: Any) extends FilterComponent {
   override def toString = attr + filterType + value
 }
 

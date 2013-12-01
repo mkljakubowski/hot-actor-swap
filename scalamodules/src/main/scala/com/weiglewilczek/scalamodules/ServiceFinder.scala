@@ -15,17 +15,45 @@
  */
 package com.weiglewilczek.scalamodules
 
-import org.osgi.framework.BundleContext
+import org.osgi.framework.{ServiceReference, BundleContext}
 
-class ServiceFinder[I <: AnyRef](
-    interface: Class[I],
-    context: BundleContext) {
+private[scalamodules] trait ServiceOperations {
+  def invokeService[I, T](serviceReference: ServiceReference, f: I => T, context: BundleContext): Option[T] = {
+    try {
+      context getService serviceReference match {
+        case null => {
+          None
+        }
+        case service => {
+          val result = Some(f(service.asInstanceOf[I]))
+          result
+        }
+      }
+    }
+  }
 
-  /**
-   * Applies the given function to a service. The service is found by its service interface.
-   * @param f The function to be applied to a service; must not be null!
-   * @return The optional result of applying the given function; None if no service available
-   */
+  def invokeServiceUnget[I, T](serviceReference: ServiceReference, f: I => T, context: BundleContext): Option[T] = {
+    try {
+      context getService serviceReference match {
+        case null => {
+          None
+        }
+        case service => {
+          val result = Some(f(service.asInstanceOf[I]))
+          result
+        }
+      }
+    } finally context ungetService serviceReference
+  }
+
+  def serviceUnget[I, T](serviceReference: ServiceReference, context: BundleContext) = {
+    context ungetService serviceReference
+  }
+
+}
+
+class ServiceFinder[I <: AnyRef](interface: Class[I], context: BundleContext) extends ServiceOperations {
+
   def andApply[T](f: I => T): Option[T] = {
     context getServiceReference interface.getName match {
       case null => {
@@ -59,11 +87,6 @@ class ServiceFinder[I <: AnyRef](
     }
   }
 
-  /**
-   * Applies the given function to a service and its properties. The service is found by its service interface.
-   * @param f
-   * @return
-   */
   def andApply[T](f: (I, Props) => T): Option[T] = {
     context getServiceReference interface.getName match {
       case null => {
@@ -76,50 +99,41 @@ class ServiceFinder[I <: AnyRef](
   }
 }
 
-private[scalamodules] class ServicesFinder[I <: AnyRef](
-    interface: Class[I],
-    context: BundleContext,
-    filter: Option[Filter] = None) {
+private[scalamodules] class ServicesFinder[I <: AnyRef](interface: Class[I], context: BundleContext, filter: Option[Filter] = None) extends ServiceOperations {
 
-  /**
-   * Additionally use the given Filter for finding services.
-   * @param filter The Filter to be added to this ServiceFinders; must not be null!
-   * @return A ServiceFinders for a service interface and the given Filter
-   */
   def withFilter(filter: Filter) = {
     new ServicesFinder(interface, context, Some(filter))
   }
 
-  /**
-   * Applies the given function to all services. The services are found by service interface and an optional filter.
-   * @param f The function to be applied to all services; must not be null!
-   * @return A Seq with the results of applying the given function to all services
-   */
   def andApply[T](f: I => T): Seq[T] = {
-    context.getServiceReferences(interface.getName, filter map { _.toString } orNull) match {
+    context.getServiceReferences(interface.getName, filter map {
+      _.toString
+    } orNull) match {
       case null => {
         Nil
       }
       case refs => {
-        refs.toList flatMap { invokeServiceUnget(_, f, context) }
+        refs.toList flatMap {
+          invokeServiceUnget(_, f, context)
+        }
       }
     }
   }
 
-  /**
-   * Applies the given function to all services and their properties. The services are found by service interface and an optional filter.
-   * @param f The function to be applied to all services and their properties; must not be null!
-   * @return A Seq with the results of applying the given function to all services
-   */
   def andApply[T](f: (I, Props) => T): Seq[T] = {
-    context.getServiceReferences(interface.getName, filter map { _.toString } orNull) match {
+    context.getServiceReferences(interface.getName, filter map {
+      _.toString
+    } orNull) match {
       case null => {
         Nil
       }
       case refs => {
-        refs.toList flatMap { ref => invokeServiceUnget(ref, f(_: I, ref.properties), context) }
+        refs.toList flatMap {
+          ref => invokeServiceUnget(ref, f(_: I, ref.properties), context)
+        }
       }
     }
   }
 
 }
+
