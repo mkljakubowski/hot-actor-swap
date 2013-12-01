@@ -34,7 +34,6 @@ package object scalamodules {
    * @return The RichBundleContext initialized with the given BundleContext
    */
   implicit def toRichBundleContext(context: BundleContext): RichBundleContext = {
-    require(context != null, "The BundleContext must not be null!")
     new RichBundleContext(context)
   }
 
@@ -44,7 +43,6 @@ package object scalamodules {
    * @return The RichServiceReference initialized with the given ServiceReference
    */
   implicit def toRichServiceReference(serviceReference: ServiceReference): RichServiceReference = {
-    require(serviceReference != null, "The ServiceReference must not be null!")
     new RichServiceReference(serviceReference)
   }
 
@@ -62,7 +60,6 @@ package object scalamodules {
    * @return A SimpleOpBuilder initialized with the given String attribute
    */
   implicit def toSimpleOpBuilder(attr: String): SimpleOpBuilder = {
-    require(attr != null, "The attr must not be null!")
     new SimpleOpBuilder(attr)
   }
 
@@ -72,7 +69,6 @@ package object scalamodules {
    * @return A PresentBuilder initialized with the given String attribute
    */
   implicit def toPresentBuilder(attr: String): PresentBuilder = {
-    require(attr != null, "The attr must not be null!")
     new PresentBuilder(attr)
   }
 
@@ -80,13 +76,13 @@ package object scalamodules {
    * Returns the given or inferred type wrapped into a Some.
    */
   def interface[I](implicit manifest: Manifest[I]): Option[Class[I]] =
-    Some(manifest.erasure.asInstanceOf[Class[I]])
+    Some(manifest.runtimeClass.asInstanceOf[Class[I]])
 
   /**
    * Returns the given or inferred type.
    */
   def withInterface[I](implicit manifest: Manifest[I]): Class[I] =
-    manifest.erasure.asInstanceOf[Class[I]]
+    manifest.runtimeClass.asInstanceOf[Class[I]]
 
   private[scalamodules] implicit def scalaMapToJavaDictionary[K, V](map: Map[K, V]) = {
     import scala.collection.JavaConversions._
@@ -112,43 +108,31 @@ package object scalamodules {
       f: I => T,
       context: BundleContext): Option[T] = {
 
-    assert(serviceReference != null, "The ServiceReference must not be null!")
-    assert(f != null, "The function to be applied to the service must not be null!")
-    assert(context != null, "The BundleContext must not be null!")
-
     try {
       context getService serviceReference match {
         case null => {
-//          logger warn "Could not get service for ServiceReference %s!".format(serviceReference)
           None
         }
         case service => {
           val result = Some(f(service.asInstanceOf[I]))
-//          logger info "Invoked service for  ServiceReference %s!".format(serviceReference)
           result
         }
       }
-    } //finally context ungetService serviceReference
+    }
   }
 
   private[scalamodules] def invokeServiceUnget[I, T](
-                                                 serviceReference: ServiceReference,
-                                                 f: I => T,
-                                                 context: BundleContext): Option[T] = {
-
-    assert(serviceReference != null, "The ServiceReference must not be null!")
-    assert(f != null, "The function to be applied to the service must not be null!")
-    assert(context != null, "The BundleContext must not be null!")
+       serviceReference: ServiceReference,
+       f: I => T,
+       context: BundleContext): Option[T] = {
 
     try {
       context getService serviceReference match {
         case null => {
-//          logger warn "Could not get service for ServiceReference %s!".format(serviceReference)
           None
         }
         case service => {
           val result = Some(f(service.asInstanceOf[I]))
-//          logger info "Invoked service for  ServiceReference %s!".format(serviceReference)
           result
         }
       }
@@ -157,10 +141,6 @@ package object scalamodules {
 
   private[scalamodules] def serviceUnget[I, T]( serviceReference: ServiceReference,
                                                       context: BundleContext) = {
-
-    assert(serviceReference != null, "The ServiceReference must not be null!")
-    assert(context != null, "The BundleContext must not be null!")
-
     context ungetService serviceReference
   }
 

@@ -24,10 +24,7 @@ import org.osgi.util.tracker.ServiceTracker
  * @param service The service for this event; must not be null!
  * @param properties The service properties for this event; must not be null!
  */
-sealed abstract class ServiceEvent[I](service: I, properties: Props) {
-  require(service != null, "The service must not be null!")
-  require(properties != null, "The service properties must not be null!")
-}
+sealed abstract class ServiceEvent[I](service: I, properties: Props)
 
 /**
  * Service event for a service being added to the watched (tracked) services.
@@ -58,17 +55,12 @@ private[scalamodules] class ServicesWatcher[I <: AnyRef](
     context: BundleContext,
     filter: Option[Filter] = None) {
 
-  assert(interface != null, "The service interface must not be null!")
-  assert(context != null, "The BundleContext must not be null!")
-  assert(filter != null, "The filter must not be null!")
-
   /**
    * Additionally use the given Filter for finding services.
    * @param filter The Filter to be added to this ServiceWatcher; must not be null!
    * @return A ServiceWatcher for a service interface and the given Filter
    */
   def withFilter(filter: Filter) = {
-    require(filter != null, "The filter must not be null!")
     new ServicesWatcher(interface, context, Some(filter))
   }
 
@@ -77,8 +69,6 @@ private[scalamodules] class ServicesWatcher[I <: AnyRef](
    * @param handler The handler to be used for ServiceEvents; must not be null!
    */
   def andHandle(handler: PartialFunction[ServiceEvent[I], Unit]) {
-
-    require(handler != null, "The handler for ServiceEvents must not be null!")
 
     val fullFilter = filter match {
       case None => Filter(OBJECTCLASS === interface.getName)
@@ -92,7 +82,6 @@ private[scalamodules] class ServicesWatcher[I <: AnyRef](
         val serviceEvent = AddingService(service.asInstanceOf[I], serviceReference.properties)
         if (handler.isDefinedAt(serviceEvent)) {
           handler(serviceEvent)
-//          logger info "Handled AddingService event."
         }
         service
       }
@@ -101,7 +90,6 @@ private[scalamodules] class ServicesWatcher[I <: AnyRef](
         val serviceEvent = ServiceModified(service.asInstanceOf[I], serviceReference.properties)
         if (handler.isDefinedAt(serviceEvent)) {
           handler(serviceEvent)
-//          logger info "Handled ServiceModified event."
         }
       }
 
@@ -109,7 +97,6 @@ private[scalamodules] class ServicesWatcher[I <: AnyRef](
         val serviceEvent = ServiceRemoved(service.asInstanceOf[I], serviceReference.properties)
         if (handler.isDefinedAt(serviceEvent)) {
           handler(serviceEvent)
-//          logger info "Handled ServiceRemoved event."
         }
         context ungetService serviceReference
       }
