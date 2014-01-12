@@ -1,4 +1,4 @@
-package com.virtuslab.has.test.poop
+package com.virtuslab.has.test.actors
 
 import com.virtuslab.has.core.{Version, VersioningActor}
 

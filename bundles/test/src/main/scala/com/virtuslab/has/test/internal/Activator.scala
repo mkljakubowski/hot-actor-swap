@@ -4,7 +4,7 @@ import org.osgi.framework.{BundleActivator, BundleContext}
 import com.weiglewilczek.scalamodules._
 import akka.actor._
 import scala.Some
-import com.virtuslab.has.test.poop.{SomeActorV2, SomeActorV1}
+import com.virtuslab.has.test.actors.{SomeActorV2, SomeActorV1}
 import scala.concurrent.duration._
 import com.virtuslab.has.core.{Version, VersioningRouter, Messages}
 import scala.reflect._
