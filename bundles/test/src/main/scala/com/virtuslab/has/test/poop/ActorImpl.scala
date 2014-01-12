@@ -5,19 +5,19 @@ import com.virtuslab.has.core.{Version, VersioningActor}
 /**
  * @author Mikołaj Jakubowski
  */
-class PoopV1 extends VersioningActor {
+class SomeActorV1 extends VersioningActor {
   val version = Version(1)
 
   def receive = {
-    case _ => println("Poop1")
+    case _ => println("I'm version 1")
   }
 }
 
-class PoopV2 extends VersioningActor {
+class SomeActorV2 extends VersioningActor {
   val version = Version(2)
 
   def receive = {
-    case _ => println("Poop2")
+    case _ => println("I'm version 2!")
   }
 
 }
