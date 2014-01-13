@@ -1,4 +1,4 @@
-package com.weiglewilczek.scalamodules
+package com.osgidsl.scalamodules
 
 /**
  * @author Mikołaj Jakubowski

@@ -1,7 +1,7 @@
 package com.virtuslab.has.core.internal
 
 import org.osgi.framework.{BundleActivator, BundleContext}
-import com.weiglewilczek.scalamodules._
+import com.osgidsl.scalamodules._
 import akka.actor._
 import scala.Some
 

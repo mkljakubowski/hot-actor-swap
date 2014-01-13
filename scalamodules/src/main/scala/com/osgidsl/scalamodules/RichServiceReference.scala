@@ -1,4 +1,4 @@
-package com.weiglewilczek.scalamodules
+package com.osgidsl.scalamodules
 
 import org.osgi.framework.ServiceReference
 

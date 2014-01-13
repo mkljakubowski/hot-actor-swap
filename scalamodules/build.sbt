@@ -1,4 +1,4 @@
-OsgiKeys.exportPackage := Seq("com.weiglewilczek.scalamodules")
+OsgiKeys.exportPackage := Seq("com.osgidsl.scalamodules")
 
 OsgiKeys.importPackage := Seq("*")
 
